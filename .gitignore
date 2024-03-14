@@ -27,3 +27,4 @@ sidewalk
 .DS_Store
 __debug*
 tmp
+.tmp
