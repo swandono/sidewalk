@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"strings"
+	"regexp"
 
 	"github.com/spf13/cobra"
 )
@@ -51,30 +51,25 @@ func command(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	// List the items in the directory
-	output, err := exec.Command("ls", dir).Output()
+	// Get the list of items in the directory
+	listDir, err := os.ReadDir(dir)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Output list items: ", string(output))
-
-	// Convert []byte to string then make it list with delimiter \n
-	items := strings.Split(string(output), "\n")
-
-	// Check if list items already installed
-	for _, item := range items {
-		fmt.Println("Checking ", item)
-		_, err := exec.Command("brew", "list", string(item)).Output()
+	fmt.Println("List items: ", listDir)
+	for _, item := range listDir {
+		reg, err := regexp.Compile(`[^\w]`)
 		if err != nil {
-			fmt.Println("Not installed ", item)
-			// fmt.Println("Installing ", item)
-			// _, err := exec.Command("brew", "install", string(item)).Output()
-			// if err != nil {
-			// 	log.Fatal(err)
-			// }
-		} else {
-			fmt.Println("Already installed ", item)
+			log.Fatal(err)
+		}
+		name := reg.ReplaceAllString(item.Name(), " ")
+		if item.IsDir() {
+			_, err := exec.Command("brew", "list", name).Output()
+			if err != nil {
+				fmt.Println(name, "Not installed ")
+			} else {
+				fmt.Println(name, "Already installed ")
+			}
 		}
 	}
-
 }
