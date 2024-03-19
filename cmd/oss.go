@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-type env interface {
+type oss interface {
 	check(name string) ([]string, error)
 	install(name string) error
 	uninstall(name string) error
@@ -16,6 +16,7 @@ type env interface {
 }
 
 type macos struct {
+	name string
 }
 
 func (m *macos) check(name string) ([]string, error) {
@@ -39,6 +40,7 @@ func (m *macos) update(name string) error {
 }
 
 type linux struct {
+	name string
 }
 
 func (l *linux) check(name string) ([]string, error) {

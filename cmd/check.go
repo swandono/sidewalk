@@ -31,7 +31,7 @@ func init() {
 }
 
 func command(cmd *cobra.Command, args []string) {
-	oss := getEnv()
+	oss := getOss()
 	if oss == nil {
 		log.Fatal("OS not supported")
 	}
