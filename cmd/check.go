@@ -31,6 +31,11 @@ func init() {
 }
 
 func command(cmd *cobra.Command, args []string) {
+	oss := getEnv()
+	if oss == nil {
+		log.Fatal("OS not supported")
+	}
+
 	// Check if there are any arguments
 	if len(args) == 0 {
 		fmt.Println("No arguments provided")
@@ -62,9 +67,9 @@ func command(cmd *cobra.Command, args []string) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		name := reg.ReplaceAllString(item.Name(), " ")
+		name := reg.ReplaceAllString(item.Name(), "")
 		if item.IsDir() {
-			_, err := exec.Command("brew", "list", name).Output()
+			_, err := oss.check(name)
 			if err != nil {
 				fmt.Println(name, "Not installed ")
 			} else {
