@@ -31,8 +31,14 @@ func getOss() oss {
 	}
 }
 
-func getYaml() map[string]interface{} {
-	obj := make(map[string]interface{})
+type data struct {
+	Exe          string   `yaml:"exe"`
+	Config       []string `yaml:"config"`
+	Dependencies []string `yaml:"dependencies"`
+}
+
+func getYaml() map[string]data {
+	obj := make(map[string]data)
 	yamlFile, err := os.ReadFile("config.yaml")
 	if err != nil {
 		fmt.Printf("yamlFile.Get err #%v ", err)
@@ -41,6 +47,5 @@ func getYaml() map[string]interface{} {
 	if err != nil {
 		fmt.Printf("Unmarshal: %v", err)
 	}
-
 	return obj
 }

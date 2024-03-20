@@ -37,29 +37,29 @@ func command(cmd *cobra.Command, args []string) {
 	for k, v := range data {
 		fmt.Printf("\n")
 		fmt.Printf("Name: %v \n", k)
-		if v.(map[interface{}]interface{})["exe"] != nil {
-			_, err := oss.check(v.(map[interface{}]interface{})["exe"].(string))
-			fmt.Printf("executable: %v \n", v.(map[interface{}]interface{})["exe"].(string))
+		if v.Exe != "" {
+			_, err := oss.check(k)
+			fmt.Printf("Executable: %v \n", v.Exe)
 			if err != nil {
 				fmt.Println(" - Not installed")
 			} else {
 				fmt.Println(" - Already installed")
 			}
 		}
-		if v.(map[interface{}]interface{})["exe"] != nil && v.(map[interface{}]interface{})["dependencies"] != nil {
+		if v.Exe != "" && v.Dependencies != nil {
 			fmt.Println("Dependencies:")
-			for _, dep := range v.(map[interface{}]interface{})["dependencies"].([]interface{}) {
-				_, err := oss.check(dep.(string))
+			for _, dep := range v.Dependencies {
+				_, err := oss.check(dep)
 				if err != nil {
-					fmt.Printf(" - %v: Not installed\n", dep.(string))
+					fmt.Printf(" - %v: Not installed\n", dep)
 				} else {
-					fmt.Printf(" - %v: Already installed\n", dep.(string))
+					fmt.Printf(" - %v: Already installed\n", dep)
 				}
 			}
 		}
-		if v.(map[interface{}]interface{})["exe"] != nil && v.(map[interface{}]interface{})["config"] != nil {
+		if v.Exe != "" && v.Config != nil {
 			fmt.Println("Config:")
-			for _, v := range v.(map[interface{}]interface{})["config"].([]interface{}) {
+			for _, v := range v.Config {
 				fmt.Printf(" - %v\n", v)
 			}
 		}
