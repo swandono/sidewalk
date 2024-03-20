@@ -6,7 +6,10 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"os"
 	"runtime"
+
+	"gopkg.in/yaml.v2"
 )
 
 func getOss() oss {
@@ -26,4 +29,18 @@ func getOss() oss {
 		log.Println("OS not supported")
 		return nil
 	}
+}
+
+func getYaml() map[string]interface{} {
+	obj := make(map[string]interface{})
+	yamlFile, err := os.ReadFile("config.yaml")
+	if err != nil {
+		fmt.Printf("yamlFile.Get err #%v ", err)
+	}
+	err = yaml.Unmarshal(yamlFile, obj)
+	if err != nil {
+		fmt.Printf("Unmarshal: %v", err)
+	}
+
+	return obj
 }

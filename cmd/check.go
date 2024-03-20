@@ -6,9 +6,6 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"os"
-	"os/exec"
-	"regexp"
 
 	"github.com/spf13/cobra"
 )
@@ -36,44 +33,34 @@ func command(cmd *cobra.Command, args []string) {
 		log.Fatal("OS not supported")
 	}
 
-	// Check if there are any arguments
-	if len(args) == 0 {
-		fmt.Println("No arguments provided")
-		return
-	}
-	gitURL := fmt.Sprintf("https://github.com/%s", args[0])
-
-	// Create a temp directory
-	dir, err := os.MkdirTemp(".tmp", "sidewalk-")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer os.RemoveAll(dir)
-
-	// Clone the repository
-	_, err = exec.Command("git", "clone", gitURL, dir).Output()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Get the list of items in the directory
-	listDir, err := os.ReadDir(dir)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("List items: ", listDir)
-	for _, item := range listDir {
-		reg, err := regexp.Compile(`[^\w]`)
-		if err != nil {
-			log.Fatal(err)
-		}
-		name := reg.ReplaceAllString(item.Name(), "")
-		if item.IsDir() {
-			_, err := oss.check(name)
+	data := getYaml()
+	for k, v := range data {
+		fmt.Printf("\n")
+		fmt.Printf("Name: %v \n", k)
+		if v.(map[interface{}]interface{})["exe"] != nil {
+			_, err := oss.check(v.(map[interface{}]interface{})["exe"].(string))
+			fmt.Printf("executable: %v \n", v.(map[interface{}]interface{})["exe"].(string))
 			if err != nil {
-				fmt.Println(name, "Not installed ")
+				fmt.Println(" - Not installed")
 			} else {
-				fmt.Println(name, "Already installed ")
+				fmt.Println(" - Already installed")
+			}
+		}
+		if v.(map[interface{}]interface{})["exe"] != nil && v.(map[interface{}]interface{})["dependencies"] != nil {
+			fmt.Println("Dependencies:")
+			for _, dep := range v.(map[interface{}]interface{})["dependencies"].([]interface{}) {
+				_, err := oss.check(dep.(string))
+				if err != nil {
+					fmt.Printf(" - %v: Not installed\n", dep.(string))
+				} else {
+					fmt.Printf(" - %v: Already installed\n", dep.(string))
+				}
+			}
+		}
+		if v.(map[interface{}]interface{})["exe"] != nil && v.(map[interface{}]interface{})["config"] != nil {
+			fmt.Println("Config:")
+			for _, v := range v.(map[interface{}]interface{})["config"].([]interface{}) {
+				fmt.Printf(" - %v\n", v)
 			}
 		}
 	}

@@ -28,14 +28,26 @@ func (m *macos) check(name string) ([]string, error) {
 }
 
 func (m *macos) install(name string) error {
+	_, err := exec.Command("brew", "install", name).Output()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func (m *macos) uninstall(name string) error {
+	_, err := exec.Command("brew", "uninstall", name).Output()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func (m *macos) update(name string) error {
+	_, err := exec.Command("brew", "upgrade", name).Output()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
