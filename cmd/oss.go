@@ -13,6 +13,7 @@ type oss interface {
 	install(name string) error
 	uninstall(name string) error
 	update(name string) error
+	init(name string, file []string) error
 }
 
 type macos struct {
@@ -51,6 +52,14 @@ func (m *macos) update(name string) error {
 	return nil
 }
 
+func (m *macos) init(name string, file []string) error {
+	_, err := exec.Command("cp", file[0], file[1]).Output()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 type linux struct {
 	name string
 }
@@ -68,5 +77,9 @@ func (l *linux) uninstall(name string) error {
 }
 
 func (l *linux) update(name string) error {
+	return nil
+}
+
+func (l *linux) init(name string, file []string) error {
 	return nil
 }

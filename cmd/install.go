@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/spf13/cobra"
 )
@@ -19,21 +20,48 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("install called")
-	},
+	Run: install,
 }
 
 func init() {
 	rootCmd.AddCommand(installCmd)
+}
 
-	// Here you will define your flags and configuration settings.
+func install(cmd *cobra.Command, args []string) {
+	oss := getOss()
+	if oss == nil {
+		log.Fatal("OS not supported")
+	}
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// installCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// installCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	data := getYaml()
+	for k, v := range data {
+		fmt.Printf("\n")
+		fmt.Printf("Name: %v \n", k)
+		if v.Exe != "" {
+			err := oss.install(k)
+			fmt.Printf("Executable: %v \n", v.Exe)
+			if err != nil {
+				fmt.Println(" - Installing Failed")
+			} else {
+				fmt.Println(" - Installing Successfull")
+			}
+		}
+		if v.Exe != "" && v.Dependencies != nil {
+			fmt.Println("Dependencies:")
+			for _, dep := range v.Dependencies {
+				err := oss.install(dep)
+				if err != nil {
+					fmt.Printf(" - %v: Installing Failed\n", dep)
+				} else {
+					fmt.Printf(" - %v: Installing Successfull\n", dep)
+				}
+			}
+		}
+		if v.Exe != "" && v.Config != nil {
+			fmt.Println("Config:")
+			for _, v := range v.Config {
+				fmt.Printf(" - %v\n", v)
+			}
+		}
+	}
 }

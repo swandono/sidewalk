@@ -20,14 +20,14 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: command,
+	Run: check,
 }
 
 func init() {
 	rootCmd.AddCommand(checkCmd)
 }
 
-func command(cmd *cobra.Command, args []string) {
+func check(cmd *cobra.Command, args []string) {
 	oss := getOss()
 	if oss == nil {
 		log.Fatal("OS not supported")
