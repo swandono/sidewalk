@@ -38,22 +38,32 @@ func install(cmd *cobra.Command, args []string) {
 		fmt.Printf("\n")
 		fmt.Printf("Name: %v \n", k)
 		if v.Exe != "" {
-			err := oss.install(k)
-			fmt.Printf("Executable: %v \n", v.Exe)
+			_, err := oss.check(k)
 			if err != nil {
-				fmt.Println(" - Installing Failed")
+				err := oss.install(k)
+				fmt.Printf("Executable: %v \n", v.Exe)
+				if err != nil {
+					fmt.Println(" - Installing Failed")
+				} else {
+					fmt.Println(" - Installing Successfull")
+				}
 			} else {
-				fmt.Println(" - Installing Successfull")
+				fmt.Println(" - Already installed")
 			}
 		}
 		if v.Exe != "" && v.Dependencies != nil {
 			fmt.Println("Dependencies:")
 			for _, dep := range v.Dependencies {
-				err := oss.install(dep)
+				_, err := oss.check(dep)
 				if err != nil {
-					fmt.Printf(" - %v: Installing Failed\n", dep)
+					err := oss.install(dep)
+					if err != nil {
+						fmt.Printf(" - %v: Installing Failed\n", dep)
+					} else {
+						fmt.Printf(" - %v: Installing Successfull\n", dep)
+					}
 				} else {
-					fmt.Printf(" - %v: Installing Successfull\n", dep)
+					fmt.Printf(" - %v: Already installed\n", dep)
 				}
 			}
 		}

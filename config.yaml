@@ -10,6 +10,7 @@ neovim:
     - ripgrep
     - fzf
     - lazygit
+    - gnu-sed
 tmux:
   exe: tmux
   config:
