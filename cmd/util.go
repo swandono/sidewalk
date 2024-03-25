@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"runtime"
 
 	"gopkg.in/yaml.v2"
@@ -35,6 +36,7 @@ type data struct {
 	Exe          string   `yaml:"exe"`
 	Config       []string `yaml:"config"`
 	Dependencies []string `yaml:"dependencies"`
+	Dir          string   `yaml:"dir"`
 }
 
 func getYaml() map[string]data {
@@ -48,4 +50,20 @@ func getYaml() map[string]data {
 		fmt.Printf("Unmarshal: %v", err)
 	}
 	return obj
+}
+
+func cloneRepo(url string) (dir string) {
+	// Create a temp directory
+	dir, err := os.MkdirTemp(".tmp", "sidewalk-")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Clone the repository
+	_, err = exec.Command("git", "clone", url, dir).Output()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return dir
 }

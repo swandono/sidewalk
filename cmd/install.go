@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -32,6 +33,19 @@ func install(cmd *cobra.Command, args []string) {
 	if oss == nil {
 		log.Fatal("OS not supported")
 	}
+
+	dir := cloneRepo("https://github.com/swandono/.dotfiles")
+	defer os.RemoveAll(dir)
+	fmt.Println("Temp Directory: ", dir)
+    listDir, err := os.ReadDir(dir)
+    if err != nil {
+        log.Fatal(err)
+    }
+    for _, v := range listDir {
+        fmt.Println(v.Name())
+    }
+
+    fmt.Println("................")
 
 	data := getYaml()
 	for k, v := range data {
@@ -67,7 +81,8 @@ func install(cmd *cobra.Command, args []string) {
 				}
 			}
 		}
-		if v.Exe != "" && v.Config != nil {
+		if v.Exe != "" && v.Config != nil && v.Dir != "" {
+			fmt.Println("Directory: ", v.Dir)
 			fmt.Println("Config:")
 			for _, v := range v.Config {
 				fmt.Printf(" - %v\n", v)
