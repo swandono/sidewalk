@@ -57,11 +57,5 @@ func check(cmd *cobra.Command, args []string) {
 				}
 			}
 		}
-		if v.Exe != "" && v.Config != nil {
-			fmt.Println("Config:")
-			for _, v := range v.Config {
-				fmt.Printf(" - %v\n", v)
-			}
-		}
 	}
 }
