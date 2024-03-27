@@ -37,15 +37,15 @@ func install(cmd *cobra.Command, args []string) {
 	dir := cloneRepo("https://github.com/swandono/.dotfiles")
 	defer os.RemoveAll(dir)
 	fmt.Println("Temp Directory: ", dir)
-    listDir, err := os.ReadDir(dir)
-    if err != nil {
-        log.Fatal(err)
-    }
-    for _, v := range listDir {
-        fmt.Println(v.Name())
-    }
+	listDir, err := os.ReadDir(dir)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, v := range listDir {
+		fmt.Println(v.Name())
+	}
 
-    fmt.Println("................")
+	fmt.Println("................")
 
 	data := getYaml()
 	for k, v := range data {
@@ -83,6 +83,13 @@ func install(cmd *cobra.Command, args []string) {
 		}
 		if v.Exe != "" && v.Config != nil && v.Dir != "" {
 			fmt.Println("Directory: ", v.Dir)
+			// check if the folder exist else create it
+			err := os.MkdirAll(v.Dir, 0755)
+			if err != nil {
+				fmt.Println("Directory already exist")
+			}
+			fmt.Println("Copying files")
+
 			fmt.Println("Config:")
 			for _, v := range v.Config {
 				fmt.Printf(" - %v\n", v)

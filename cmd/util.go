@@ -22,7 +22,7 @@ func getOss() oss {
 			name: "macos",
 		}
 	case "linux":
-		fmt.Println("Linux")
+		fmt.Println("Linux operating system")
 		return &linux{
 			name: "linux",
 		}
