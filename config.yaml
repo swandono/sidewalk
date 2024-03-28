@@ -1,6 +1,6 @@
 neovim:
   exe: nvim
-  dir: ~/.config/test/nvim
+  dir: .config/test/nvim
   config:
     - init.lua
     - lua
@@ -14,11 +14,11 @@ neovim:
     - gnu-sed
 tmux:
   exe: tmux
-  dir: ~/.config/test/tmux
+  dir: .config/test/tmux
   config:
     - .tmux.conf
 kitty:
   exe: kitty
-  dir: ~/.config/test/kitty
+  dir: .config/test/kitty
   config:
     - kitty.conf

@@ -82,9 +82,9 @@ func install(cmd *cobra.Command, args []string) {
 			}
 		}
 		if v.Exe != "" && v.Config != nil && v.Dir != "" {
-			fmt.Println("Directory: ", v.Dir)
-			// check if the folder exist else create it
-			err := os.MkdirAll(v.Dir, 0755)
+			fmt.Println("Directory 1: ", v.Dir)
+			home, _ := os.UserHomeDir()
+			err := os.MkdirAll(home+"/"+v.Dir, 0755)
 			if err != nil {
 				fmt.Println("Directory already exist")
 			}
