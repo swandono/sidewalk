@@ -21,7 +21,8 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: install,
+	Args: cobra.ExactArgs(1),
+	Run:  install,
 }
 
 func init() {
@@ -34,9 +35,10 @@ func install(cmd *cobra.Command, args []string) {
 		log.Fatal("OS not supported")
 	}
 
-	dir := cloneRepo("https://github.com/swandono/.dotfiles")
+	repo := checkRepo(args[0])
+	dir := cloneRepo(repo)
 	defer os.RemoveAll(dir)
-	fmt.Println("Temp Directory: ", dir)
+
 	listDir, err := os.ReadDir(dir)
 	if err != nil {
 		log.Fatal(err)
@@ -46,8 +48,7 @@ func install(cmd *cobra.Command, args []string) {
 	}
 
 	fmt.Println("................")
-
-	data := getYaml()
+	data := getYaml(dir)
 	for k, v := range data {
 		fmt.Printf("\n")
 		fmt.Printf("Name: %v \n", k)
@@ -82,17 +83,26 @@ func install(cmd *cobra.Command, args []string) {
 			}
 		}
 		if v.Exe != "" && v.Config != nil && v.Dir != "" {
-			fmt.Println("Directory 1: ", v.Dir)
 			home, _ := os.UserHomeDir()
-			err := os.MkdirAll(home+"/"+v.Dir, 0755)
+			target := home + "/" + v.Dir
+			fmt.Println("Directory: ", target)
+
+			// Create a directory
+			err := os.MkdirAll(target, 0755)
 			if err != nil {
 				fmt.Println("Directory already exist")
 			}
-			fmt.Println("Copying files")
 
+			// Copy file
 			fmt.Println("Config:")
 			for _, v := range v.Config {
-				fmt.Printf(" - %v\n", v)
+				source := dir + "/" + v
+				err := oss.init(target, source)
+				if err != nil {
+					fmt.Printf(" - %v: Copy Failed\n", v)
+				} else {
+					fmt.Printf(" - %v: Copy Successfull\n", v)
+				}
 			}
 		}
 	}

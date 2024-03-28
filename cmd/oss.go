@@ -13,7 +13,7 @@ type oss interface {
 	install(name string) error
 	uninstall(name string) error
 	update(name string) error
-	init(name string, file []string) error
+	init(target string, source string) error
 }
 
 type macos struct {
@@ -52,8 +52,8 @@ func (m *macos) update(name string) error {
 	return nil
 }
 
-func (m *macos) init(name string, file []string) error {
-	_, err := exec.Command("cp", file[0], file[1]).Output()
+func (m *macos) init(target string, source string) error {
+	_, err := exec.Command("cp", "-r", source, target).Output()
 	if err != nil {
 		return err
 	}
@@ -64,22 +64,43 @@ type linux struct {
 	name string
 }
 
+// Ubuntu
 func (l *linux) check(name string) ([]string, error) {
-	return []string{}, nil
+	list, err := exec.Command("dpkg", "-l", name).Output()
+	if err != nil {
+		return nil, err
+	}
+	return strings.Split(string(list), "\n"), nil
 }
 
 func (l *linux) install(name string) error {
+	_, err := exec.Command("apt-get", "install", name).Output()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func (l *linux) uninstall(name string) error {
+	_, err := exec.Command("apt-get", "remove", name).Output()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 func (l *linux) update(name string) error {
+	_, err := exec.Command("apt-get", "update", name).Output()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-func (l *linux) init(name string, file []string) error {
+func (l *linux) init(target string, source string) error {
+	_, err := exec.Command("cp", "-r", source, target).Output()
+	if err != nil {
+		return err
+	}
 	return nil
 }

@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 )
@@ -39,9 +40,9 @@ type data struct {
 	Dir          string   `yaml:"dir"`
 }
 
-func getYaml() map[string]data {
+func getYaml(dir string) map[string]data {
 	obj := make(map[string]data)
-	yamlFile, err := os.ReadFile("config.yaml")
+	yamlFile, err := os.ReadFile(dir + "/sidewalk.yaml")
 	if err != nil {
 		fmt.Printf("yamlFile.Get err #%v ", err)
 	}
@@ -66,4 +67,15 @@ func cloneRepo(url string) (dir string) {
 	}
 
 	return dir
+}
+
+func checkRepo(repo string) string {
+	if !strings.Contains(repo, "git") { // Check if the repo is a git repo
+		repo = "https://github.com/" + repo
+		fmt.Println("Repo: ", repo)
+	} else if !strings.Contains(repo, "http") { // Check if the repo is a http repo
+		repo = "https://" + repo
+		fmt.Println("Repo: ", repo)
+	}
+	return repo
 }

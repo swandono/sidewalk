@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/spf13/cobra"
 )
@@ -20,6 +21,7 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
+    Args: cobra.ExactArgs(1),
 	Run: check,
 }
 
@@ -33,7 +35,11 @@ func check(cmd *cobra.Command, args []string) {
 		log.Fatal("OS not supported")
 	}
 
-	data := getYaml()
+	repo := checkRepo(args[0])
+	dir := cloneRepo(repo)
+	defer os.RemoveAll(dir)
+
+	data := getYaml(dir)
 	for k, v := range data {
 		fmt.Printf("\n")
 		fmt.Printf("Name: %v \n", k)
