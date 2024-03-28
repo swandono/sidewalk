@@ -21,8 +21,8 @@ and usage of using your command. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-    Args: cobra.ExactArgs(1),
-	Run: check,
+	Args: cobra.ExactArgs(1),
+	Run:  check,
 }
 
 func init() {
@@ -36,10 +36,17 @@ func check(cmd *cobra.Command, args []string) {
 	}
 
 	repo := checkRepo(args[0])
-	dir := cloneRepo(repo)
+	dir, err := cloneRepo(repo)
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer os.RemoveAll(dir)
 
-	data := getYaml(dir)
+	fmt.Println("................")
+	data, err := getYaml(dir)
+	if err != nil {
+		log.Fatal(err)
+	}
 	for k, v := range data {
 		fmt.Printf("\n")
 		fmt.Printf("Name: %v \n", k)

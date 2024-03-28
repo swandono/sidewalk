@@ -36,7 +36,10 @@ func install(cmd *cobra.Command, args []string) {
 	}
 
 	repo := checkRepo(args[0])
-	dir := cloneRepo(repo)
+	dir, err := cloneRepo(repo)
+	if err != nil {
+		log.Fatal(err)
+	}
 	defer os.RemoveAll(dir)
 
 	listDir, err := os.ReadDir(dir)
@@ -48,7 +51,10 @@ func install(cmd *cobra.Command, args []string) {
 	}
 
 	fmt.Println("................")
-	data := getYaml(dir)
+	data, err := getYaml(dir)
+	if err != nil {
+		log.Fatal(err)
+	}
 	for k, v := range data {
 		fmt.Printf("\n")
 		fmt.Printf("Name: %v \n", k)

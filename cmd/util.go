@@ -40,33 +40,35 @@ type data struct {
 	Dir          string   `yaml:"dir"`
 }
 
-func getYaml(dir string) map[string]data {
+func getYaml(dir string) (map[string]data, error) {
 	obj := make(map[string]data)
 	yamlFile, err := os.ReadFile(dir + "/sidewalk.yaml")
 	if err != nil {
 		fmt.Printf("yamlFile.Get err #%v ", err)
+		return nil, err
 	}
 	err = yaml.Unmarshal(yamlFile, obj)
 	if err != nil {
 		fmt.Printf("Unmarshal: %v", err)
+		return nil, err
 	}
-	return obj
+	return obj, err
 }
 
-func cloneRepo(url string) (dir string) {
+func cloneRepo(url string) (dir string, err error) {
 	// Create a temp directory
-	dir, err := os.MkdirTemp(".tmp", "sidewalk-")
+	dir, err = os.MkdirTemp(".tmp", "sidewalk-")
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
 	// Clone the repository
 	_, err = exec.Command("git", "clone", url, dir).Output()
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
-	return dir
+	return dir, nil
 }
 
 func checkRepo(repo string) string {
