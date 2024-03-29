@@ -11,20 +11,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// installCmd represents the install command
-var installCmd = &cobra.Command{
-	Use:   "install",
-	Short: "Install software from the repository",
-	Long:  `Install software from the repository. It will install the software and dependencies.`,
+// updateCmd represents the update command
+var updateCmd = &cobra.Command{
+	Use:   "update",
+	Short: "Update software from the repository",
+	Long:  `Update software from the repository. It will update the software and dependencies.`,
 	Args:  cobra.ExactArgs(1),
-	Run:   install,
+	Run:   update,
 }
 
 func init() {
-	rootCmd.AddCommand(installCmd)
+	rootCmd.AddCommand(updateCmd)
 }
 
-func install(cmd *cobra.Command, args []string) {
+func update(cmd *cobra.Command, args []string) {
 	oss := getOss()
 	if oss == nil {
 		log.Fatal("OS not supported")
@@ -56,15 +56,15 @@ func install(cmd *cobra.Command, args []string) {
 		if v.Exe != "" {
 			_, err := oss.check(k)
 			if err != nil {
-				err := oss.install(k)
+				err := oss.update(k)
 				fmt.Printf("Executable: %v \n", v.Exe)
 				if err != nil {
-					fmt.Println(" - Installing Failed")
+					fmt.Println(" - Updating Failed")
 				} else {
-					fmt.Println(" - Installing Successfull")
+					fmt.Println(" - Updating Successfull")
 				}
 			} else {
-				fmt.Println(" - Already installed")
+				fmt.Println(" - Already up to date")
 			}
 		}
 		if v.Exe != "" && v.Dependencies != nil {
@@ -72,14 +72,14 @@ func install(cmd *cobra.Command, args []string) {
 			for _, dep := range v.Dependencies {
 				_, err := oss.check(dep)
 				if err != nil {
-					err := oss.install(dep)
+					err := oss.update(dep)
 					if err != nil {
-						fmt.Printf(" - %v: Installing Failed\n", dep)
+						fmt.Printf(" - %v: Updating Failed\n", dep)
 					} else {
-						fmt.Printf(" - %v: Installing Successfull\n", dep)
+						fmt.Printf(" - %v: Updating Successfull\n", dep)
 					}
 				} else {
-					fmt.Printf(" - %v: Already installed\n", dep)
+					fmt.Printf(" - %v: Already up to date\n", dep)
 				}
 			}
 		}

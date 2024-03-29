@@ -11,20 +11,20 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// installCmd represents the install command
-var installCmd = &cobra.Command{
-	Use:   "install",
-	Short: "Install software from the repository",
-	Long:  `Install software from the repository. It will install the software and dependencies.`,
+// syncCmd represents the sync command
+var syncCmd = &cobra.Command{
+	Use:   "sync",
+	Short: "Sync software from the repository",
+	Long:  `Sync software from the repository. It will install the software, dependencies, and configuration files.`,
 	Args:  cobra.ExactArgs(1),
-	Run:   install,
+	Run:   sync,
 }
 
 func init() {
-	rootCmd.AddCommand(installCmd)
+	rootCmd.AddCommand(syncCmd)
 }
 
-func install(cmd *cobra.Command, args []string) {
+func sync(cmd *cobra.Command, args []string) {
 	oss := getOss()
 	if oss == nil {
 		log.Fatal("OS not supported")
@@ -80,6 +80,29 @@ func install(cmd *cobra.Command, args []string) {
 					}
 				} else {
 					fmt.Printf(" - %v: Already installed\n", dep)
+				}
+			}
+		}
+		if v.Exe != "" && v.Config != nil && v.Dir != "" {
+			home, _ := os.UserHomeDir()
+			target := home + "/" + v.Dir
+			fmt.Println("Directory: ", target)
+
+			// Create a directory
+			err := os.MkdirAll(target, 0755)
+			if err != nil {
+				fmt.Println("Directory already exist")
+			}
+
+			// Copy file
+			fmt.Println("Config:")
+			for _, v := range v.Config {
+				source := dir + "/" + v
+				err := oss.init(target, source)
+				if err != nil {
+					fmt.Printf(" - %v: Copy Failed\n", v)
+				} else {
+					fmt.Printf(" - %v: Copy Successfull\n", v)
 				}
 			}
 		}
